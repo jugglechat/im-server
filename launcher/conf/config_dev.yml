@@ -1,0 +1,22 @@
+clusterName: testCluster
+nodeName: testNode
+clusterMod: signal
+rpcHost: 127.0.0.1
+rpcPort: 8888
+
+zookeeper:
+  address: 127.0.0.1:2181
+
+log:
+  logPath: ./logs
+  logName: im-server
+
+mysql:
+  user: root
+  password: xiaoguang
+  address: 127.0.0.1:3306
+  name: im_db
+
+connectManager:
+  tcpPort: 9001
+  wsPort: 9002

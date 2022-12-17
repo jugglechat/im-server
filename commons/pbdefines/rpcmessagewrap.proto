@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = "./pbobjs";
+
+enum RpcMsgType{
+    UserPub = 0;
+    UserPubAck = 1;
+    ServerPub = 2;
+    ServerPubAck = 3;
+    QueryMsg = 4;
+    QueryAck = 5;
+    QueryConfirm = 6;
+}
+message RpcMessageWraper{
+    RpcMsgType rpcMsgType = 1;
+    string appKey = 2;
+    string session = 3;
+    string method = 4;
+    string targetId = 5;
+    string sourceMethod = 6;
+    string requesterId = 7;
+    int32 qos = 8;
+    int32 reqIndex = 9;
+    int32 publishType = 10;
+    string sdkVersion = 11;
+    string deviceId = 12;
+    string clientOs = 13;
+    string clientAddress = 14;
+    string packageName = 15;
+    int32  terminalCount = 16;
+
+    int32 resultCode = 21;
+    int64 msgSendTime = 22;
+    string msgId = 23;
+
+
+    bytes appDataBytes = 50;
+}
