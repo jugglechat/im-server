@@ -15,6 +15,7 @@ type PrivateMsgActor struct {
 }
 
 func (actor *PrivateMsgActor) OnReceive(input proto.Message) {
+	fmt.Println("msg revc")
 	if upMsg, ok := input.(*pbobjs.UpMsg); ok {
 		fmt.Println(upMsg)
 		userPubAck := clusters.CreateUserPubAckWraper(0, "msg-id", time.Now().UnixMilli(), actor.Context)

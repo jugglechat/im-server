@@ -40,13 +40,21 @@ type ImConfig struct {
 		TcpPort int `yaml:"tcpPort"`
 		WsPort  int `yaml:"wsPort"`
 	} `yaml:"connectManager"`
+
+	ApiGateway struct {
+		HttpPort int `yaml:"httpPort"`
+	} `yaml:"apiGateway"`
+
+	NavGateway struct {
+		HttpPort int `yaml:"httpPort"`
+	} `yaml:"navGateway"`
 }
 
 var Config ImConfig
 var Env string
 
 func InitConfigures() error {
-	env := os.Getenv("ENV")
+	env := "dev" //os.Getenv("ENV")
 	if env == "" {
 		env = EnvDev
 		os.Setenv("ENV", env)

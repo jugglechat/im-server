@@ -2,7 +2,22 @@ package clusters
 
 import (
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
+	"github.com/jugglechat/im-server/commons/tools"
+	"google.golang.org/protobuf/proto"
 )
+
+func CreateQueryAckWraper(respMsg proto.Message, ctx BaseContext) *pbobjs.RpcMessageWraper {
+	queryAck := &pbobjs.RpcMessageWraper{
+		RpcMsgType: pbobjs.RpcMsgType_QueryAck,
+	}
+
+	bs, _ := tools.PbMarshal(respMsg)
+
+	queryAck.AppDataBytes = bs
+	handleBaseContext(queryAck, ctx)
+
+	return queryAck
+}
 
 func CreateServerPubWraper(requesterId, targetId, method string, ctx BaseContext) *pbobjs.RpcMessageWraper {
 	serverPub := &pbobjs.RpcMessageWraper{

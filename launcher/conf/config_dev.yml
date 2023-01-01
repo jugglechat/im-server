@@ -20,3 +20,9 @@ mysql:
 connectManager:
   tcpPort: 9001
   wsPort: 9002
+
+apiGateway:
+  httpPort: 8080
+
+navGateway:
+  httpPort: 8081

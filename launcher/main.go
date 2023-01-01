@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/jugglechat/im-server/commons/clusters"
@@ -11,6 +12,7 @@ import (
 	"github.com/jugglechat/im-server/services/chatroom"
 	"github.com/jugglechat/im-server/services/connectmanager"
 	"github.com/jugglechat/im-server/services/message"
+	"github.com/jugglechat/im-server/services/usermanager"
 )
 
 func main() {
@@ -18,7 +20,8 @@ func main() {
 	waitgroup.Add(1)
 	//init configures
 	if err := configures.InitConfigures(); err != nil {
-		logs.Error("Init Configures failed.", err)
+		//logs.Error("Init Configures failed.", err)
+		fmt.Println("Init Configures failed.", err)
 		return
 	}
 	//init logs
@@ -37,6 +40,8 @@ func main() {
 	imstarters.Loaded(&connectmanager.ConnectManager{})
 	imstarters.Loaded(&message.MessageManager{})
 	imstarters.Loaded(&chatroom.ChatRoomManager{})
+	imstarters.Loaded(&usermanager.UserManager{})
+	//imstarters.Loaded(&apigateway.ApiGateway{})
 
 	imstarters.Startup()
 

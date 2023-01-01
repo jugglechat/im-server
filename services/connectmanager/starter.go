@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/jugglechat/im-server/commons/configures"
+	"github.com/jugglechat/im-server/services/connectmanager/actors"
 	"github.com/jugglechat/im-server/services/connectmanager/server"
-	"github.com/jugglechat/im-server/services/connectmanager/server/actors"
 	"github.com/yuwnloyblog/gmicro"
 	"github.com/yuwnloyblog/gmicro/actorsystem"
 )
