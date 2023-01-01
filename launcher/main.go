@@ -6,13 +6,14 @@ import (
 
 	"github.com/jugglechat/im-server/commons/clusters"
 	"github.com/jugglechat/im-server/commons/configures"
-	"github.com/jugglechat/im-server/commons/dbs"
+	"github.com/jugglechat/im-server/commons/dbcommons"
 	"github.com/jugglechat/im-server/commons/imstarters"
 	"github.com/jugglechat/im-server/commons/logs"
 	"github.com/jugglechat/im-server/services/apigateway"
 	"github.com/jugglechat/im-server/services/chatroom"
 	"github.com/jugglechat/im-server/services/connectmanager"
 	"github.com/jugglechat/im-server/services/message"
+	"github.com/jugglechat/im-server/services/navigator"
 	"github.com/jugglechat/im-server/services/usermanager"
 )
 
@@ -28,7 +29,7 @@ func main() {
 	//init logs
 	logs.InitLogs()
 	//init mysql
-	if err := dbs.InitMysql(); err != nil {
+	if err := dbcommons.InitMysql(); err != nil {
 		logs.Error("Init Mysql failed.", err)
 		return
 	}
@@ -40,6 +41,7 @@ func main() {
 
 	imstarters.Loaded(&connectmanager.ConnectManager{})
 	imstarters.Loaded(&apigateway.ApiGateway{})
+	imstarters.Loaded(&navigator.Navigator{})
 	imstarters.Loaded(&message.MessageManager{})
 	imstarters.Loaded(&chatroom.ChatRoomManager{})
 	imstarters.Loaded(&usermanager.UserManager{})

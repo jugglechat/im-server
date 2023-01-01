@@ -33,12 +33,14 @@ type ImConfig struct {
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 		Address  string `yaml:"address"`
-		DbName   string `yaml:"dbName"`
+		DbName   string `yaml:"name"`
 	} `yaml:"mysql"`
 
 	ConnectManager struct {
-		TcpPort int `yaml:"tcpPort"`
-		WsPort  int `yaml:"wsPort"`
+		TcpHost string `yaml:"tcpHost"`
+		TcpPort int    `yaml:"tcpPort"`
+		WsHost  string `yaml:"wsHost"`
+		WsPort  int    `yaml:"wsPort"`
 	} `yaml:"connectManager"`
 
 	ApiGateway struct {

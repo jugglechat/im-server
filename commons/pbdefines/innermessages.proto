@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "./pbobjs";
+
+message UserRegReq{
+    string userId = 1;
+    string nickname = 2;
+    string userPortrait = 3;
+}
+
+message UserReqResp{
+    string userId = 1;
+    string token = 2;
+}

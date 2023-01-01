@@ -18,7 +18,9 @@ mysql:
   name: im_db
 
 connectManager:
+  tcpHost: 127.0.0.1
   tcpPort: 9001
+  wsHost: 127.0.0.1
   wsPort: 9002
 
 apiGateway:

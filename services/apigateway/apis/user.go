@@ -1,41 +1,41 @@
 package apis
 
 import (
-	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jugglechat/im-server/commons/clusters"
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
-	"github.com/jugglechat/im-server/commons/tools"
 	"github.com/jugglechat/im-server/services/apigateway/models"
+	"google.golang.org/protobuf/proto"
 )
 
 func Register(ctx *gin.Context) {
-	var userInfo models.UserInfo
+	var userInfo models.UserRegReq
 	if err := ctx.BindJSON(&userInfo); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr())
+		ctx.JSON(http.StatusBadRequest, models.DefaultErr(err.Error()))
 		return
 	}
 
-	m := &pbobjs.UpMsg{
-		MsgContent: []byte{1, 2, 3},
+	resp, err := SyncApiCall(ctx, "regUser", userInfo.UserId, &pbobjs.UserRegReq{
+		UserId:       userInfo.UserId,
+		Nickname:     userInfo.Nickname,
+		UserPortrait: userInfo.UserPortrait,
+	}, func() proto.Message {
+		return &pbobjs.UserReqResp{}
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, models.DefaultErr(err.Error()))
+		return
 	}
-	bs, _ := tools.PbMarshal(m)
 
-	result, err := clusters.SyncUnicastRoute(&pbobjs.RpcMessageWraper{
-		RpcMsgType:   pbobjs.RpcMsgType_QueryMsg,
-		AppKey:       "appkey",
-		Session:      "session",
-		Method:       "regUser",
-		RequesterId:  "requestId",
-		Qos:          1,
-		AppDataBytes: bs,
-		TargetId:     userInfo.UserId,
-	}, 5*time.Second)
+	rpcResp, ok := resp.(*pbobjs.UserReqResp)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, models.DefaultErr("pb not match."))
+		return
+	}
 
-	fmt.Println(result, err)
-
-	ctx.JSON(http.StatusOK, userInfo)
+	ctx.JSON(http.StatusOK, models.Success(models.UserReqResp{
+		UserId: rpcResp.UserId,
+		Token:  rpcResp.Token,
+	}))
 }

@@ -18,6 +18,7 @@ func (ser *ApiGateway) RegisterActors(register gmicro.IActorRegister) {
 }
 func (ser *ApiGateway) Startup(args map[string]interface{}) {
 	ser.httpServer = gin.Default()
+	ser.httpServer.Use(apis.Signature)
 	group := ser.httpServer.Group("/apigateway")
 	group.POST("/users/register", apis.Register)
 

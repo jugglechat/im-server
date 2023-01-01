@@ -1,7 +1,11 @@
 package models
 
-type UserInfo struct {
+type UserRegReq struct {
 	UserId       string `json:"user_id"`
-	NickName     string `json:"nick_name"`
+	Nickname     string `json:"nickname"`
 	UserPortrait string `json:"user_portrait"`
+}
+type UserReqResp struct {
+	UserId string `json:"user_id"`
+	Token  string `json:"token"`
 }

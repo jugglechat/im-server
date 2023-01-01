@@ -1,5 +1,16 @@
 package models
 
+type NaviReq struct {
+	AppKey string `json:"app_key"`
+	Token  string `json:"token"`
+}
+
+type NaviResp struct {
+	AppKey  string   `json:"app_key"`
+	UserId  string   `json:"user_id"`
+	Servers []string `json:"servers"`
+}
+
 type DefaultResp struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`

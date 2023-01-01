@@ -1,4 +1,4 @@
-package dbs
+package dbcommons
 
 import (
 	"fmt"

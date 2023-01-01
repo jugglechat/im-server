@@ -1,4 +1,4 @@
-package dbs
+package dbcommons
 
 import (
 	"time"
@@ -16,7 +16,7 @@ type AppTable struct {
 }
 
 func (app AppTable) TableName() string {
-	return "im_apps"
+	return "apps"
 }
 
 func (app AppTable) FindByAppkey(appkey string) *AppTable {
@@ -37,7 +37,7 @@ type AppExtTable struct {
 }
 
 func (appExt AppExtTable) TableName() string {
-	return "im_appexts"
+	return "appexts"
 }
 
 func (appExt AppExtTable) FindListByAppkey(appkey string) []*AppExtTable {

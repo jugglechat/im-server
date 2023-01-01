@@ -12,6 +12,9 @@ import (
 type UserManager struct{}
 
 func (manager *UserManager) RegisterActors(register gmicro.IActorRegister) {
+	register.RegisterActor("upstream", func() actorsystem.IUntypedActor {
+		return &actors.UpstreamActor{}
+	}, 64)
 	register.RegisterActor("regUser", func() actorsystem.IUntypedActor {
 		return clusters.BaseProcessActor(&actors.UserManagerActor{})
 	}, 64)

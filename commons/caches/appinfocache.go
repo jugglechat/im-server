@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jugglechat/im-server/commons/dbs"
+	"github.com/jugglechat/im-server/commons/dbcommons"
 )
 
 var appInfoCache *LruCache
@@ -29,7 +29,7 @@ func init() {
 	appInfoCache.AddTimeoutAfterRead(5 * time.Minute)
 	appInfoCache.AddTimeoutAfterCreate(10 * time.Minute)
 	appInfoCache.AddValueCreator(func(key interface{}) interface{} {
-		appTable := dbs.AppTable{}
+		appTable := dbcommons.AppTable{}
 		app := appTable.FindByAppkey(key.(string))
 		if app != nil {
 			appInfo := &AppInfo{
@@ -40,7 +40,7 @@ func init() {
 				CreatedTime:  app.CreatedTime,
 			}
 
-			appExtTable := dbs.AppExtTable{}
+			appExtTable := dbcommons.AppExtTable{}
 			appExtList := appExtTable.FindListByAppkey(key.(string))
 
 			extMap := make(map[string]string)

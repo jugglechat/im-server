@@ -4,11 +4,12 @@ import (
 	"github.com/jugglechat/im-server/commons/gmicro/actorsystem"
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
 	"github.com/jugglechat/im-server/commons/tools"
+
 	"google.golang.org/protobuf/proto"
 )
 
 func BaseProcessActor(actor actorsystem.IUntypedActor) actorsystem.IUntypedActor {
-	return baseProcessActor{exeActor: actor}
+	return &baseProcessActor{exeActor: actor}
 }
 
 type IContextHandler interface {
@@ -25,22 +26,28 @@ type BaseActor struct {
 }
 
 type BaseContext struct {
-	SeqIndex      int
-	AppKey        string
-	ClientOs      string
-	DeviceId      string
-	ClientAddr    string
-	SdkVersion    string
-	Qos           int
-	Package       string
-	Session       string
-	Method        string
-	SourceMethod  string
-	RequesterId   string
-	TargetId      string
-	TerminalCount int
-	PublishType   int
+	SeqIndex     int
+	AppKey       string
+	Qos          int
+	Session      string
+	Method       string
+	SourceMethod string
+	RequesterId  string
+	TargetId     string
+	PublishType  int
+	IsFromApi    bool
+
+	ExtParams map[string]string
 }
+
+const (
+	CtxKey_SdkVersion    string = "CtxKey_SdkVersion"
+	CtxKey_DeviceId      string = "CtxKey_DeviceId"
+	CtxKey_ClientOs      string = "CtxKey_ClientOs"
+	CtxKey_ClientAddress string = "CtxKey_ClientAddress"
+	CtxKey_PackageName   string = "CtxKey_PackageName"
+	CtxKey_TerminalCount string = "CtxKey_TerminalCount"
+)
 
 func (actor *BaseActor) SetContext(ctx BaseContext) {
 	actor.Context = ctx
@@ -56,21 +63,17 @@ func (actor *baseProcessActor) OnReceive(input proto.Message) {
 		ssRequest, ok := input.(*pbobjs.RpcMessageWraper)
 		if ok {
 			ctx := BaseContext{
-				SeqIndex:      int(ssRequest.ReqIndex),
-				AppKey:        ssRequest.AppKey,
-				ClientOs:      ssRequest.ClientOs,
-				DeviceId:      ssRequest.DeviceId,
-				ClientAddr:    ssRequest.ClientAddress,
-				SdkVersion:    ssRequest.SdkVersion,
-				Qos:           int(ssRequest.Qos),
-				Package:       ssRequest.PackageName,
-				Session:       ssRequest.Session,
-				Method:        ssRequest.Method,
-				SourceMethod:  ssRequest.SourceMethod,
-				RequesterId:   ssRequest.RequesterId,
-				TargetId:      ssRequest.TargetId,
-				TerminalCount: int(ssRequest.TerminalCount),
-				PublishType:   int(ssRequest.PublishType),
+				SeqIndex:     int(ssRequest.ReqIndex),
+				AppKey:       ssRequest.AppKey,
+				Qos:          int(ssRequest.Qos),
+				Session:      ssRequest.Session,
+				Method:       ssRequest.Method,
+				SourceMethod: ssRequest.SourceMethod,
+				RequesterId:  ssRequest.RequesterId,
+				TargetId:     ssRequest.TargetId,
+				PublishType:  int(ssRequest.PublishType),
+				IsFromApi:    ssRequest.IsFromApi,
+				ExtParams:    ssRequest.ExtParams,
 			}
 
 			ctxHandler, ok := actor.exeActor.(IContextHandler)

@@ -3,6 +3,7 @@ package clusters
 import (
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
 	"github.com/jugglechat/im-server/commons/tools"
+
 	"google.golang.org/protobuf/proto"
 )
 
@@ -19,10 +20,13 @@ func CreateQueryAckWraper(respMsg proto.Message, ctx BaseContext) *pbobjs.RpcMes
 	return queryAck
 }
 
-func CreateServerPubWraper(requesterId, targetId, method string, ctx BaseContext) *pbobjs.RpcMessageWraper {
+func CreateServerPubWraper(requesterId, targetId, method string, msg proto.Message, ctx BaseContext) *pbobjs.RpcMessageWraper {
 	serverPub := &pbobjs.RpcMessageWraper{
 		RpcMsgType: pbobjs.RpcMsgType_ServerPub,
+		Qos:        1,
 	}
+	bs, _ := tools.PbMarshal(msg)
+	serverPub.AppDataBytes = bs
 	handleBaseContext(serverPub, ctx)
 	serverPub.RequesterId = requesterId
 	serverPub.TargetId = targetId
@@ -43,17 +47,13 @@ func CreateUserPubAckWraper(code int, msgId string, msgSendTime int64, ctx BaseC
 func handleBaseContext(rpcMsg *pbobjs.RpcMessageWraper, ctx BaseContext) {
 	rpcMsg.ReqIndex = int32(ctx.SeqIndex)
 	rpcMsg.AppKey = ctx.AppKey
-	rpcMsg.ClientOs = ctx.ClientOs
-	rpcMsg.DeviceId = ctx.DeviceId
-	rpcMsg.ClientAddress = ctx.ClientAddr
-	rpcMsg.SdkVersion = ctx.SdkVersion
 	rpcMsg.Qos = int32(ctx.Qos)
-	rpcMsg.PackageName = ctx.Package
 	rpcMsg.Session = ctx.Session
 	rpcMsg.Method = ctx.Method
 	rpcMsg.SourceMethod = ctx.SourceMethod
 	rpcMsg.RequesterId = ctx.RequesterId
 	rpcMsg.TargetId = ctx.TargetId
-	rpcMsg.TerminalCount = int32(ctx.TerminalCount)
 	rpcMsg.PublishType = int32(ctx.PublishType)
+	rpcMsg.IsFromApi = ctx.IsFromApi
+	rpcMsg.ExtParams = ctx.ExtParams
 }

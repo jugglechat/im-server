@@ -55,7 +55,6 @@ func (actor *ApiCallbackActor) OnReceive(input proto.Message) {
 			Msg: rpcMsg,
 			Err: nil,
 		}
-		fmt.Println("recev:", rpcMsg)
 	} else {
 		fmt.Println("need log.")
 	}
@@ -75,7 +74,6 @@ func SyncUnicastRoute(msg IRoute, ttl time.Duration) (*pbobjs.RpcMessageWraper, 
 	sender := cluster.CallbackActorOf(ttl, &ApiCallbackActor{
 		respChan: respChan,
 	})
-	fmt.Println("method:", msg.GetMethod(), msg.GetTargetId())
 	cluster.UnicastRoute(msg.GetMethod(), msg.GetTargetId(), msg.(*pbobjs.RpcMessageWraper), sender)
 
 	select {

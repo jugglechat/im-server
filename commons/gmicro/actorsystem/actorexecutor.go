@@ -19,15 +19,14 @@ type ActorExecutor struct {
 }
 
 func NewActorExecutor(concurrentCount int, actorCreateFun func() IUntypedActor) *ActorExecutor {
-	pool := sync.Pool{
-		New: func() interface{} {
-			return actorCreateFun()
-		},
-	}
 	executor := &ActorExecutor{
-		wraperChan:     make(chan wraper, buffersize),
-		executePool:    tunny.NewCallback(concurrentCount),
-		actorPool:      pool,
+		wraperChan:  make(chan wraper, buffersize),
+		executePool: tunny.NewCallback(concurrentCount),
+		actorPool: sync.Pool{
+			New: func() interface{} {
+				return actorCreateFun()
+			},
+		},
 		actorCreateFun: actorCreateFun,
 	}
 	go actorExecute(executor)

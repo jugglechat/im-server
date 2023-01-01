@@ -1,12 +1,10 @@
 package actors
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/jugglechat/im-server/commons/clusters"
 	"github.com/jugglechat/im-server/commons/gmicro/actorsystem"
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
+	"github.com/jugglechat/im-server/services/message/services"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -15,10 +13,9 @@ type PrivateMsgActor struct {
 }
 
 func (actor *PrivateMsgActor) OnReceive(input proto.Message) {
-	fmt.Println("msg revc")
 	if upMsg, ok := input.(*pbobjs.UpMsg); ok {
-		fmt.Println(upMsg)
-		userPubAck := clusters.CreateUserPubAckWraper(0, "msg-id", time.Now().UnixMilli(), actor.Context)
+		code, msgId, sendTime := services.SendMsg(actor.Context, upMsg)
+		userPubAck := clusters.CreateUserPubAckWraper(code, msgId, sendTime, actor.Context)
 		actor.Sender.Tell(userPubAck, actorsystem.NoSender)
 	}
 }

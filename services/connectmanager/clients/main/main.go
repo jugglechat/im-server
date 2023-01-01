@@ -11,15 +11,17 @@ import (
 )
 
 func main() {
-	cli := clients.NewImClient("127.0.0.1:9001", "appkey", "token")
+	cli := clients.NewImClient("127.0.0.1:9001", "appkey", "CgZhcHBrZXkaIDAr072n8uOcw5YBeKCcQ+QCw4m6YWhgt99U787/dEJS")
 
 	cli.Connect("network", "ispNum", func(code clients.ClientErrorCode, connAck *codec.ConnectAckMsgBody) {
 		if code == clients.ClientErrorCode_Success {
-			SendPrivateMsg(cli)
-
+			//SendPrivateMsg(cli)
+			fmt.Println("connect success.")
 			//SendMsgTest(cli)
 			//QueryTest(cli)
 			//PingTest(cli)
+		} else {
+			fmt.Println("connect fail.", code)
 		}
 	})
 	cli.Disconnect()

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -39,27 +40,37 @@ func (*ImListenerImpl) Close(ctx netty.InactiveContext) {
 }
 func (*ImListenerImpl) ExceptionCaught(ctx netty.ExceptionContext, ex netty.Exception) {}
 func (*ImListenerImpl) Connected(msg *codec.ConnectMsgBody, ctx netty.InboundContext) {
-	userId := msg.Token
 	clientIp := msg.ClientIp
 	if clientIp == "" {
 		clientIp = ctx.Channel().RemoteAddr()
 	}
 	//check something
-
+	if code := managers.CheckLogin(ctx, msg); code > 0 {
+		msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
+			Code:      code,
+			Session:   utils.GetConnSession(ctx),
+			Timestamp: time.Now().UnixMilli(),
+		})
+		ctx.Channel().Write(msgAck)
+		ctx.Channel().Close(errors.New("Failed to Login."))
+		return
+	}
+	userId := utils.GetContextAttrString(ctx, utils.StateKey_UserID)
 	//success
 	logs.Info(utils.GetConnSession(ctx), utils.Action_Connect, msg.Appkey, userId, msg.SdkVersion, msg.DeviceId, msg.Platform, msg.DeviceCompany, msg.DeviceModel, msg.DeviceOsVersion, msg.NetworkId, msg.IspNum, clientIp)
+
+	utils.SetContextAttr(ctx, utils.StateKey_Appkey, msg.Appkey)
+	utils.SetContextAttr(ctx, utils.StateKey_Platform, msg.Platform)
+	utils.SetContextAttr(ctx, utils.StateKey_Version, msg.SdkVersion)
+	utils.SetContextAttr(ctx, utils.StateKey_ClientIp, clientIp)
 	managers.PutInContextCache(ctx)
+
 	msgAck := codec.NewConnectAckMessage(&codec.ConnectAckMsgBody{
 		Code:      utils.ConnectAckState_Access,
 		UserId:    msg.Token,
 		Session:   utils.GetConnSession(ctx),
 		Timestamp: time.Now().UnixMilli(),
 	})
-	utils.SetContextAttr(ctx, utils.StateKey_Appkey, msg.Appkey)
-	utils.SetContextAttr(ctx, utils.StateKey_UserID, userId)
-	utils.SetContextAttr(ctx, utils.StateKey_Platform, msg.Platform)
-	utils.SetContextAttr(ctx, utils.StateKey_Version, msg.SdkVersion)
-	utils.SetContextAttr(ctx, utils.StateKey_ClientIp, clientIp)
 	ctx.Channel().Write(msgAck)
 }
 func (*ImListenerImpl) Diconnected(msg *codec.DisconnectMsgBody, ctx netty.InboundContext) {

@@ -22,12 +22,8 @@ message RpcMessageWraper{
     int32 qos = 8;
     int32 reqIndex = 9;
     int32 publishType = 10;
-    string sdkVersion = 11;
-    string deviceId = 12;
-    string clientOs = 13;
-    string clientAddress = 14;
-    string packageName = 15;
-    int32  terminalCount = 16;
+    bool isFromApi = 11;
+    map<string,string> extParams = 12;
 
     int32 resultCode = 21;
     int64 msgSendTime = 22;

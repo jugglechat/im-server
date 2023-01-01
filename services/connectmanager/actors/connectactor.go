@@ -1,6 +1,8 @@
 package actors
 
 import (
+	"fmt"
+
 	"github.com/jugglechat/im-server/commons/gmicro/actorsystem"
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
 	"github.com/jugglechat/im-server/services/connectmanager/server/codec"
@@ -38,7 +40,9 @@ func (actor *ConnectActor) OnReceive(input proto.Message) {
 			var callback func()
 			var timeoutCallback func()
 			if int(rpcMsg.Qos) == codec.QoS_NeedAck || actor.Sender != actorsystem.NoSender {
-				callback = func() {}
+				callback = func() {
+					fmt.Println("callback,needack")
+				}
 				timeoutCallback = func() {}
 			}
 			managers.PublishServerPubMessage(rpcMsg.AppKey, rpcMsg.TargetId, rpcMsg.Session, &codec.PublishMsgBody{
