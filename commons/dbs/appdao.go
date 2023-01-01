@@ -7,12 +7,12 @@ import (
 )
 
 type AppTable struct {
-	ID           int64 `gorm:"primary_key"`
-	AppKey       string
-	AppSecret    string
-	AppSecureKey string
-	AppStatus    string
-	CreatedTime  time.Time
+	ID           int64     `gorm:"primary_key"`
+	AppKey       string    `gorm:"app_key"`
+	AppSecret    string    `gorm:"app_secret"`
+	AppSecureKey string    `gorm:"app_secure_key"`
+	AppStatus    string    `gorm:"app_status"`
+	CreatedTime  time.Time `gorm:"created_time"`
 }
 
 func (app AppTable) TableName() string {

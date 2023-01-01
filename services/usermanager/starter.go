@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/jugglechat/im-server/commons/clusters"
+	"github.com/jugglechat/im-server/commons/gmicro"
+	"github.com/jugglechat/im-server/commons/gmicro/actorsystem"
 	"github.com/jugglechat/im-server/services/usermanager/actors"
-	"github.com/yuwnloyblog/gmicro"
-	"github.com/yuwnloyblog/gmicro/actorsystem"
 )
 
 type UserManager struct{}

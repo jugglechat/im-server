@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jugglechat/im-server/commons/configures"
+	"github.com/jugglechat/im-server/commons/gmicro"
 	"github.com/jugglechat/im-server/services/apigateway/apis"
-	"github.com/yuwnloyblog/gmicro"
 )
 
 type ApiGateway struct {

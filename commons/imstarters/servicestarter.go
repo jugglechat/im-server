@@ -2,7 +2,7 @@ package imstarters
 
 import (
 	"github.com/jugglechat/im-server/commons/clusters"
-	"github.com/yuwnloyblog/gmicro"
+	"github.com/jugglechat/im-server/commons/gmicro"
 )
 
 type IServiceStarter interface{}
