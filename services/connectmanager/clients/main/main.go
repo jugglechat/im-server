@@ -15,8 +15,8 @@ func main() {
 
 	cli.Connect("network", "ispNum", func(code clients.ClientErrorCode, connAck *codec.ConnectAckMsgBody) {
 		if code == clients.ClientErrorCode_Success {
-			//SendPrivateMsg(cli)
 			fmt.Println("connect success.")
+			SendPrivateMsg(cli)
 			//SendMsgTest(cli)
 			//QueryTest(cli)
 			//PingTest(cli)

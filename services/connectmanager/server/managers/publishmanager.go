@@ -20,9 +20,9 @@ func init() {
 		callbackTimeoutTimer.Start()
 	}
 }
-func PublishServerPubMessage(appkey, userid, session string, serverPubMsg *codec.PublishMsgBody, publishType int, callback func(), timeoutCallback func()) {
+func PublishServerPubMessage(appkey, userid, session string, serverPubMsg *codec.PublishMsgBody, publishType int, callback func(), notOnlineCallback func()) {
 	userCtxMap := GetConnectCtxByUser(appkey, userid)
-	if len(userCtxMap) > 0 {
+	if len(userCtxMap) > 0 { //target user is online
 		isSetCallback := false
 		for kSess, vCtx := range userCtxMap {
 			if publishType == 1 && kSess != session { //publishType:1, 只给指定的session发送
@@ -48,10 +48,9 @@ func PublishServerPubMessage(appkey, userid, session string, serverPubMsg *codec
 				logs.Info(utils.GetConnSession(vCtx), utils.Action_ServerPub, tmpPubMsg.MsgBody.Index, tmpPubMsg.MsgBody.Topic, len(tmpPubMsg.MsgBody.Data))
 				if callback != nil && !isSetCallback {
 					isSetCallback = true
-					task := callbackTimeoutTimer.Add(30*time.Second, func() {
-						if timeoutCallback != nil {
-							timeoutCallback() //do timeout
-						}
+					task := callbackTimeoutTimer.Add(20*time.Second, func() {
+						//do timeout
+						utils.RemoveServerPubCallback(vCtx, tmpPubMsg.MsgBody.Index)
 					})
 					utils.PutServerPubCallback(vCtx, tmpPubMsg.MsgBody.Index, func() {
 						callbackTimeoutTimer.Remove(task) //remove from timeout timer
@@ -60,19 +59,22 @@ func PublishServerPubMessage(appkey, userid, session string, serverPubMsg *codec
 				}
 			}
 		}
+	} else { //target user is not online
+		if notOnlineCallback != nil {
+			notOnlineCallback()
+		}
 	}
 }
 
-func PublishQryAckMessage(session string, qryAckMsg *codec.QueryAckMsgBody, callback func(), timeoutCallback func()) {
+func PublishQryAckMessage(session string, qryAckMsg *codec.QueryAckMsgBody, callback func(), notOnlineCallback func()) {
 	ctx := GetConnectCtxBySession(session)
 	if ctx != nil {
 		qos := codec.QoS_NoAck
 		if callback != nil {
 			qos = codec.QoS_NeedAck
-			task := callbackTimeoutTimer.Add(30*time.Second, func() {
-				if timeoutCallback != nil {
-					timeoutCallback()
-				}
+			task := callbackTimeoutTimer.Add(20*time.Second, func() {
+				//do timeout
+				utils.RemoveQueryAckCallback(ctx, qryAckMsg.Index)
 			})
 			utils.PutQueryAckCallback(ctx, qryAckMsg.Index, func() {
 				callbackTimeoutTimer.Remove(task)
@@ -82,6 +84,10 @@ func PublishQryAckMessage(session string, qryAckMsg *codec.QueryAckMsgBody, call
 		tmpQryAckMsg := codec.NewQueryAckMessage(qryAckMsg, qos)
 		ctx.Write(tmpQryAckMsg)
 		logs.Info(utils.GetConnSession(ctx), utils.Action_QueryAck, qryAckMsg.Index, qryAckMsg.Code, len(qryAckMsg.Data))
+	} else {
+		if notOnlineCallback != nil {
+			notOnlineCallback()
+		}
 	}
 }
 

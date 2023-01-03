@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 	"sync"
 
 	"github.com/jugglechat/im-server/commons/clusters"
@@ -18,6 +20,10 @@ import (
 )
 
 func main() {
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(1)
 	//init configures

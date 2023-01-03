@@ -61,3 +61,7 @@ func (system *ActorSystem) CallbackActerOf(ttl time.Duration, actor ICallbackUnt
 func (system *ActorSystem) RegisterActor(method string, actorCreateFun func() IUntypedActor, concurrentCount int) {
 	system.dispatcher.RegisterActor(method, actorCreateFun, concurrentCount)
 }
+
+func (system *ActorSystem) RegisterMultiMethodActor(methods []string, actorCreateFun func() IUntypedActor, concurrentCount int) {
+	system.dispatcher.RegisterMultiMethodActor(methods, actorCreateFun, concurrentCount)
+}

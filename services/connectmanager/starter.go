@@ -16,7 +16,7 @@ type ConnectManager struct {
 }
 
 func (ser *ConnectManager) RegisterActors(register gmicro.IActorRegister) {
-	register.RegisterActor("connect", func() actorsystem.IUntypedActor {
+	register.RegisterMultiMethodActor([]string{"connect", "msg", "ntf"}, func() actorsystem.IUntypedActor {
 		return &actors.ConnectActor{}
 	}, 64)
 }

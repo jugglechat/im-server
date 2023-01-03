@@ -15,7 +15,7 @@ func SendMsg(ctx clusters.BaseContext, upMsg *pbobjs.UpMsg) (int, string, int64)
 	sendTime := time.Now().UnixMilli()
 	msgId := tools.GenerateUUIDShort22()
 
-	//TODO 并发控制时间戳
+	//TODO generate timestamp
 
 	downMsg := &pbobjs.DownMsg{
 		FromId:     ctx.RequesterId,
@@ -27,7 +27,12 @@ func SendMsg(ctx clusters.BaseContext, upMsg *pbobjs.UpMsg) (int, string, int64)
 		Flags:      upMsg.Flags,
 		ClientUid:  upMsg.ClientUid,
 	}
-	rpcMsg := clusters.CreateServerPubWraper(ctx.RequesterId, ctx.TargetId, "connect", downMsg, ctx)
+	//save msg for sender
+	SaveMsg(ctx.RequesterId, downMsg, MsgDirection_Send)
+	//save msg for receiver
+	SaveMsg(ctx.TargetId, downMsg, MsgDirection_Receive)
+
+	rpcMsg := clusters.CreateServerPubWraper(ctx.RequesterId, ctx.TargetId, "msg", downMsg, ctx)
 	clusters.UnicastRouteWithCallback(rpcMsg, &SendMsgAckActor{}, 5*time.Second)
 	return 0, msgId, sendTime
 }

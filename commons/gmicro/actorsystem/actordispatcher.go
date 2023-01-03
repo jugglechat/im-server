@@ -74,6 +74,12 @@ func (dispatcher *ActorDispatcher) RegisterActor(method string, actorCreateFun f
 	executor := NewActorExecutor(concurrentCount, actorCreateFun)
 	dispatcher.dispatchMap.Store(method, executor)
 }
+func (dispatcher *ActorDispatcher) RegisterMultiMethodActor(methods []string, actorCreateFun func() IUntypedActor, concurrentCount int) {
+	executor := NewActorExecutor(concurrentCount, actorCreateFun)
+	for _, method := range methods {
+		dispatcher.dispatchMap.Store(method, executor)
+	}
+}
 
 func (dispatcher *ActorDispatcher) AddCallbackActor(session []byte, actor ICallbackUntypedActor, ttl time.Duration) {
 	executor := NewCallbackActorExecutor(dispatcher.callbackPool, dispatcher.callbackWraperChan, actor)

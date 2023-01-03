@@ -25,31 +25,32 @@ func (actor *ConnectActor) OnReceive(input proto.Message) {
 			})
 		} else if rpcMsg.RpcMsgType == pbobjs.RpcMsgType_QueryAck {
 			var callback func()
-			var timeoutCallback func()
+			var ontOnlineCallback func()
 			if int(rpcMsg.Qos) == codec.QoS_NeedAck || actor.Sender != actorsystem.NoSender {
 				callback = func() {}
-				timeoutCallback = func() {}
+				ontOnlineCallback = func() {}
 			}
 			managers.PublishQryAckMessage(rpcMsg.Session, &codec.QueryAckMsgBody{
 				Index:     rpcMsg.ReqIndex,
 				Code:      rpcMsg.ResultCode,
 				Timestamp: rpcMsg.MsgSendTime,
 				Data:      rpcMsg.AppDataBytes,
-			}, callback, timeoutCallback)
+			}, callback, ontOnlineCallback)
 		} else if rpcMsg.RpcMsgType == pbobjs.RpcMsgType_ServerPub {
+
 			var callback func()
-			var timeoutCallback func()
+			var ontOnlineCallback func()
 			if int(rpcMsg.Qos) == codec.QoS_NeedAck || actor.Sender != actorsystem.NoSender {
 				callback = func() {
 					fmt.Println("callback,needack")
 				}
-				timeoutCallback = func() {}
+				ontOnlineCallback = func() {}
 			}
 			managers.PublishServerPubMessage(rpcMsg.AppKey, rpcMsg.TargetId, rpcMsg.Session, &codec.PublishMsgBody{
 				Topic:     rpcMsg.Method,
 				TargetId:  rpcMsg.TargetId,
 				Timestamp: rpcMsg.MsgSendTime,
-			}, int(rpcMsg.PublishType), callback, timeoutCallback)
+			}, int(rpcMsg.PublishType), callback, ontOnlineCallback)
 		}
 	}
 }

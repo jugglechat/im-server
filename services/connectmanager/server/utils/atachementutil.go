@@ -91,6 +91,27 @@ func PutServerPubCallback(ctx netty.HandlerContext, index int32, callback func()
 	callbackMap.Store(index, callback)
 }
 
+func GetAndDeleteServerPubCallback(ctx netty.HandlerContext, index int32) func() {
+	obj := GetContextAttr(ctx, StateKey_ServerPubCallbackMap)
+	if obj != nil {
+		callbackMap := obj.(*sync.Map)
+		callbackObj, ok := callbackMap.LoadAndDelete(index)
+		if ok {
+			callback := callbackObj.(func())
+			return callback
+		}
+	}
+	return nil
+}
+
+func RemoveServerPubCallback(ctx netty.HandlerContext, index int32) {
+	obj := GetContextAttr(ctx, StateKey_ServerPubCallbackMap)
+	if obj != nil {
+		callbackMap := obj.(*sync.Map)
+		callbackMap.Delete(index)
+	}
+}
+
 func PutQueryAckCallback(ctx netty.HandlerContext, index int32, callback func()) {
 	lock := GetCtxLocker(ctx)
 	lock.Lock()
@@ -104,4 +125,25 @@ func PutQueryAckCallback(ctx netty.HandlerContext, index int32, callback func())
 		callbackMap = obj.(*sync.Map)
 	}
 	callbackMap.Store(index, callback)
+}
+
+func GetAndDeleteQueryAckCallback(ctx netty.HandlerContext, index int32) func() {
+	obj := GetContextAttr(ctx, StateKey_QueryConfirmMap)
+	if obj != nil {
+		callbackMap := obj.(*sync.Map)
+		callbackObj, ok := callbackMap.LoadAndDelete(index)
+		if ok {
+			callback := callbackObj.(func())
+			return callback
+		}
+	}
+	return nil
+}
+
+func RemoveQueryAckCallback(ctx netty.HandlerContext, index int32) {
+	obj := GetContextAttr(ctx, StateKey_QueryConfirmMap)
+	if obj != nil {
+		callbackMap := obj.(*sync.Map)
+		callbackMap.Delete(index)
+	}
 }

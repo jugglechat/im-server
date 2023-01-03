@@ -93,6 +93,11 @@ func (*ImListenerImpl) PublishArrived(msg *codec.PublishMsgBody, qos int, ctx ne
 	}, "connect")
 }
 func (*ImListenerImpl) PubAckArrived(msg *codec.PublishAckMsgBody, ctx netty.InboundContext) {
+	index := msg.GetIndex()
+	callback := utils.GetAndDeleteServerPubCallback(ctx, index)
+	if callback != nil {
+		callback()
+	}
 	logs.Info(utils.GetConnSession(ctx), utils.Action_ServerPubAck, msg.Index)
 }
 func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundContext) {
@@ -114,6 +119,11 @@ func (*ImListenerImpl) QueryArrived(msg *codec.QueryMsgBody, ctx netty.InboundCo
 	logs.Info(utils.GetConnSession(ctx), utils.Action_QueryAck, msg.Index, 0, len(retData))
 }
 func (*ImListenerImpl) QueryConfirmArrived(msg *codec.QueryConfirmMsgBody, ctx netty.InboundContext) {
+	index := msg.GetIndex()
+	callback := utils.GetAndDeleteQueryAckCallback(ctx, index)
+	if callback != nil {
+		callback()
+	}
 	logs.Info(utils.GetConnSession(ctx), utils.Action_QueryConfirm, msg.Index)
 }
 func (*ImListenerImpl) PingArrived(ctx netty.InboundContext) {

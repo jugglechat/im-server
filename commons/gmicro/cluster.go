@@ -17,6 +17,7 @@ type Cluster struct {
 
 type IActorRegister interface {
 	RegisterActor(method string, actorCreateFun func() actorsystem.IUntypedActor, concurrentCount int)
+	RegisterMultiMethodActor(methods []string, actorCreateFun func() actorsystem.IUntypedActor, concurrentCount int)
 }
 
 func NewSingleCluster(clustername, nodename string) *Cluster {
@@ -51,6 +52,12 @@ func NewCluster(clustername, nodename, host string, port int, zkAddress []string
 func (cluster *Cluster) RegisterActor(method string, actorCreateFun func() actorsystem.IUntypedActor, concurrentCount int) {
 	cluster.actorSystem.RegisterActor(method, actorCreateFun, concurrentCount)
 	cluster.currentNode.AddMethod(method)
+}
+func (cluster *Cluster) RegisterMultiMethodActor(methods []string, actorCreateFun func() actorsystem.IUntypedActor, concurrentCount int) {
+	cluster.actorSystem.RegisterMultiMethodActor(methods, actorCreateFun, concurrentCount)
+	for _, method := range methods {
+		cluster.currentNode.AddMethod(method)
+	}
 }
 
 func (cluster *Cluster) Startup() {
