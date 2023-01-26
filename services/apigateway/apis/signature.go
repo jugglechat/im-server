@@ -8,14 +8,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jugglechat/im-server/commons/caches"
-	"github.com/jugglechat/im-server/services/apigateway/models"
+	"github.com/jugglechat/im-server/commons/errs"
+	"github.com/jugglechat/im-server/services/apigateway/services"
 )
 
 const (
-	Header_AppKey    string = "AppKey"
-	Header_Nonce     string = "Nonce"
-	Header_Timestamp string = "Timestamp"
-	Header_Signature string = "Signature"
+	Header_AppKey    string = "appkey"
+	Header_Nonce     string = "nonce"
+	Header_Timestamp string = "timestamp"
+	Header_Signature string = "signature"
 )
 
 func Signature(ctx *gin.Context) {
@@ -24,22 +25,22 @@ func Signature(ctx *gin.Context) {
 	tsStr := ctx.Request.Header.Get(Header_Timestamp)
 	signature := ctx.Request.Header.Get(Header_Signature)
 	if appKey == "" {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr("AppKey is empty."))
+		ctx.JSON(http.StatusBadRequest, errs.ERR_API_APPKEY_REQUIRED)
 		ctx.Abort()
 		return
 	}
 	if nonce == "" {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr("Nonce is empty."))
+		ctx.JSON(http.StatusBadRequest, errs.ERR_API_NONCE_REQUIRED)
 		ctx.Abort()
 		return
 	}
 	if tsStr == "" {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr("Timestamp is empty."))
+		ctx.JSON(http.StatusBadRequest, errs.ERR_API_TIMESTAMP_REQUIRED)
 		ctx.Abort()
 		return
 	}
 	if signature == "" {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr("Signature is empty."))
+		ctx.JSON(http.StatusBadRequest, errs.ERR_API_SIGNATURE_REQUIRED)
 		ctx.Abort()
 		return
 	}
@@ -47,16 +48,15 @@ func Signature(ctx *gin.Context) {
 	if appInfo != nil {
 		str := fmt.Sprintf("%s%s%s", appInfo.AppSecret, nonce, tsStr)
 		sig := SHA1(str)
-		fmt.Println("sig:", sig)
 		if sig == signature {
-			ctx.Set(CtxKey_AppKey, appKey)
+			ctx.Set(services.CtxKey_AppKey, appKey)
 		} else {
-			ctx.JSON(http.StatusForbidden, models.DefaultErr("Forbidden."))
+			ctx.JSON(http.StatusForbidden, errs.ERR_API_SIGNATURE_FAIL)
 			ctx.Abort()
 			return
 		}
 	} else {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr("No AppKey."))
+		ctx.JSON(http.StatusBadRequest, errs.ERR_API_APP_NOT_EXISTED)
 		ctx.Abort()
 		return
 	}

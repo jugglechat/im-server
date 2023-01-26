@@ -12,10 +12,10 @@ import (
 )
 
 func SendMsg(ctx clusters.BaseContext, upMsg *pbobjs.UpMsg) (int, string, int64) {
-	sendTime := time.Now().UnixMilli()
-	msgId := tools.GenerateUUIDShort22()
-
-	//TODO generate timestamp
+	appkey := ctx.AppKey
+	targetId := ctx.TargetId
+	sendTime := GetSendTime(appkey, targetId)
+	msgId := tools.GenerateMsgId(sendTime, int32(pbobjs.ChannelType_Private), targetId)
 
 	downMsg := &pbobjs.DownMsg{
 		FromId:     ctx.RequesterId,
@@ -35,6 +35,11 @@ func SendMsg(ctx clusters.BaseContext, upMsg *pbobjs.UpMsg) (int, string, int64)
 	rpcMsg := clusters.CreateServerPubWraper(ctx.RequesterId, ctx.TargetId, "msg", downMsg, ctx)
 	clusters.UnicastRouteWithCallback(rpcMsg, &SendMsgAckActor{}, 5*time.Second)
 	return 0, msgId, sendTime
+}
+
+func GetSendTime(appkey, targetId string) int64 {
+	//TODO generate timestamp
+	return time.Now().UnixMilli()
 }
 
 type SendMsgAckActor struct {

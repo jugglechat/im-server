@@ -35,3 +35,17 @@ enum ChannelType {
     Chatroom = 2;
     System = 3;
 }
+message Notify{
+    int32 type = 1;
+    int64 syncTime = 2;
+}
+message SyncMsgReq{
+    int64 syncTime = 1;//收件箱同步时间
+    bool containsSendBox = 2;//是否包含发件箱消息
+    int64 sendBoxSyncTime = 3;//发件箱同步时间
+}
+message DownMsgSet{
+    repeated DownMsg msgs = 1;
+    int64 syncTime = 2;
+    bool isFinished = 3;
+}

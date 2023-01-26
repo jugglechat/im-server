@@ -1,22 +1,23 @@
 package apis
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/jugglechat/im-server/commons/errs"
 	"github.com/jugglechat/im-server/commons/pbdefines/pbobjs"
+	"github.com/jugglechat/im-server/commons/tools"
 	"github.com/jugglechat/im-server/services/apigateway/models"
+	"github.com/jugglechat/im-server/services/apigateway/services"
 	"google.golang.org/protobuf/proto"
 )
 
 func Register(ctx *gin.Context) {
 	var userInfo models.UserRegReq
 	if err := ctx.BindJSON(&userInfo); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.DefaultErr(err.Error()))
+		tools.ErrorHttpResp(ctx, errs.ERR_API_REQ_BODY_ILLEGAL)
 		return
 	}
 
-	resp, err := SyncApiCall(ctx, "regUser", userInfo.UserId, &pbobjs.UserRegReq{
+	resp, err := services.SyncApiCall(ctx, "regUser", userInfo.UserId, &pbobjs.UserRegReq{
 		UserId:       userInfo.UserId,
 		Nickname:     userInfo.Nickname,
 		UserPortrait: userInfo.UserPortrait,
@@ -24,18 +25,17 @@ func Register(ctx *gin.Context) {
 		return &pbobjs.UserReqResp{}
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.DefaultErr(err.Error()))
+		tools.ErrorHttpResp(ctx, errs.ERR_API_INTERNAL_TIMEOUT)
 		return
 	}
 
 	rpcResp, ok := resp.(*pbobjs.UserReqResp)
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, models.DefaultErr("pb not match."))
+		tools.ErrorHttpResp(ctx, errs.ERR_API_INTERNAL_RESP_FAIL)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, models.Success(models.UserReqResp{
+	tools.SuccessHttpResp(ctx, models.UserReqResp{
 		UserId: rpcResp.UserId,
 		Token:  rpcResp.Token,
-	}))
+	})
 }

@@ -1,4 +1,4 @@
-package apis
+package services
 
 import (
 	"time"

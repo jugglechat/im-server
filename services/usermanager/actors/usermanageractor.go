@@ -28,7 +28,7 @@ func (actor *UserManagerActor) OnReceive(input proto.Message) {
 		appInfo := caches.GetAppInfo(token.AppKey)
 		if appInfo != nil {
 			tokenStr, _ := token.ToTokenString([]byte(appInfo.AppSecureKey))
-			queryAck := clusters.CreateQueryAckWraper(&pbobjs.UserReqResp{
+			queryAck := clusters.CreateQueryAckWraper(0, &pbobjs.UserReqResp{
 				UserId: req.UserId,
 				Token:  tokenStr,
 			}, actor.Context)

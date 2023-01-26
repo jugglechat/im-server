@@ -7,9 +7,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func CreateQueryAckWraper(respMsg proto.Message, ctx BaseContext) *pbobjs.RpcMessageWraper {
+func CreateQueryAckWraper(code int32, respMsg proto.Message, ctx BaseContext) *pbobjs.RpcMessageWraper {
 	queryAck := &pbobjs.RpcMessageWraper{
 		RpcMsgType: pbobjs.RpcMsgType_QueryAck,
+		ResultCode: code,
 	}
 
 	bs, _ := tools.PbMarshal(respMsg)

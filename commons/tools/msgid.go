@@ -13,7 +13,7 @@ const (
 
 var currentSeq uint32 = 0
 
-func GenerateMsgId(time int64, channelType byte, targetId string) string {
+func GenerateMsgId(time int64, channelType int32, targetId string) string {
 	seq := getSeq()
 	time = time << 12
 	time = time | int64(seq)

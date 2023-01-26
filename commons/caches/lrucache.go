@@ -74,6 +74,8 @@ func (c *LruCache) cleanOdlestByReadTime(timeLine int64) {
 			} else {
 				break
 			}
+		} else {
+			break
 		}
 	}
 }
@@ -82,6 +84,19 @@ func (c *LruCache) Add(key, value interface{}) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	return c.innerAdd(key, value)
+}
+
+func (c *LruCache) AddIfAbsent(key, value interface{}) (interface{}, bool) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+	if c.innerContains(key) {
+		old, ok := c.innerGet(key)
+		if ok {
+			return old, false
+		}
+	}
+	c.innerAdd(key, value)
+	return value, true
 }
 
 func (c *LruCache) innerAdd(key, value interface{}) bool {
@@ -145,6 +160,10 @@ func (c *LruCache) GetByCreator(key interface{}) (interface{}, bool) {
 func (c *LruCache) Contains(key interface{}) bool {
 	c.lock.Lock()
 	defer c.lock.Unlock()
+	return c.lru.Contains(key)
+}
+
+func (c *LruCache) innerContains(key interface{}) bool {
 	return c.lru.Contains(key)
 }
 

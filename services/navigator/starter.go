@@ -20,7 +20,9 @@ func (ser *Navigator) Startup(args map[string]interface{}) {
 	ser.httpServer = gin.Default()
 	group := ser.httpServer.Group("/navigator")
 	group.POST("/mobile", apis.MobileNavi)
+	group.GET("/mobile", apis.MobileNaviGet)
 	group.POST("/web", apis.WebNavi)
+	group.GET("/web", apis.WebNaviGet)
 
 	httpPort := configures.Config.NavGateway.HttpPort
 	go ser.httpServer.Run(fmt.Sprintf(":%d", httpPort))
